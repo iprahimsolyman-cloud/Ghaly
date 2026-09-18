@@ -1,5 +1,0 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-html,body{margin:0;min-height:100%;font-family:Cairo,sans-serif;background:#f3f4f6;color:#1f2937}*{box-sizing:border-box}button,input,select{font:inherit}.leaflet-container{font-family:Cairo,sans-serif}
