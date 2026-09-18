@@ -1,0 +1,18 @@
+create extension if not exists pgcrypto;
+create type public.user_role as enum ('manager','supervisor');
+create table if not exists public.profiles(id uuid primary key references auth.users(id) on delete cascade,full_name text,role public.user_role not null default 'supervisor',created_at timestamptz default now());
+create table if not exists public.trees(id uuid primary key default gen_random_uuid(),tree_type text not null,health_status text not null default 'ممتازة',latitude double precision not null,longitude double precision not null,created_by uuid references auth.users(id),created_at timestamptz default now());
+create table if not exists public.farm_logs(id uuid primary key default gen_random_uuid(),parcel_name text not null,operation_type text not null,amount text not null,created_by uuid references auth.users(id),created_at timestamptz default now());
+alter table public.profiles enable row level security; alter table public.trees enable row level security; alter table public.farm_logs enable row level security;
+create or replace function public.is_manager() returns boolean language sql stable security definer set search_path=public as $$ select exists(select 1 from public.profiles where id=auth.uid() and role='manager') $$;
+create policy "profiles own read" on public.profiles for select to authenticated using (id=auth.uid());
+create policy "authenticated read trees" on public.trees for select to authenticated using (true);
+create policy "authenticated insert trees" on public.trees for insert to authenticated with check (created_by=auth.uid());
+create policy "manager update trees" on public.trees for update to authenticated using (public.is_manager()) with check (public.is_manager());
+create policy "manager delete trees" on public.trees for delete to authenticated using (public.is_manager());
+create policy "authenticated read logs" on public.farm_logs for select to authenticated using (true);
+create policy "authenticated insert logs" on public.farm_logs for insert to authenticated with check (created_by=auth.uid());
+create policy "manager update logs" on public.farm_logs for update to authenticated using (public.is_manager()) with check (public.is_manager());
+create policy "manager delete logs" on public.farm_logs for delete to authenticated using (public.is_manager());
+alter publication supabase_realtime add table public.trees;
+alter publication supabase_realtime add table public.farm_logs;
