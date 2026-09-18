@@ -1,6 +1,0 @@
- 'use client'
-import {MapContainer,TileLayer,Marker,Popup,useMapEvents} from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-function Clicks({onPick}:{onPick:(lat:number,lng:number)=>void}){useMapEvents({click:e=>onPick(e.latlng.lat,e.latlng.lng)});return null}
-export default function FarmMap({trees,onPick}:{trees:any[];onPick:(lat:number,lng:number)=>void}){return <MapContainer center={[24.7136,46.6753]} zoom={16} className="h-[420px] rounded-lg"><TileLayer attribution="Tiles © Esri" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"/><Clicks onPick={onPick}/>{trees.map(t=><Marker key={t.id} position={[t.latitude,t.longitude]} icon={L.icon({iconUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',iconRetinaUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',iconSize:[25,41],iconAnchor:[12,41]})}><Popup><b>🌳 {t.tree_type}</b><br/>الحالة: {t.health_status}</Popup></Marker>)}</MapContainer>}
